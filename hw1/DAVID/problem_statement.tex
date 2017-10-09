@@ -1,0 +1,151 @@
+%% The following template is sourced from Kevin McGrath on 6 Oct. 2017 located:
+%%http://web.engr.oregonstate.edu/cgi-bin/cgiwrap/dmcgrath/classes/17F/cs444/index.cgi?examples=examples/template.tex
+
+\documentclass[letterpaper,10pt,titlepage]{article}
+
+\usepackage{graphicx}                                        
+\usepackage{amssymb}                                         
+\usepackage{amsmath}                                         
+\usepackage{amsthm}                                          
+
+\usepackage{alltt}                                           
+\usepackage{float}
+\usepackage{color}
+\usepackage{url}
+
+\usepackage{balance}
+\usepackage{enumitem}
+\usepackage{pstricks, pst-node}
+
+\usepackage{geometry}
+\geometry{textheight=8.5in, textwidth=6in}
+
+%random comment
+
+\newcommand{\cred}[1]{{\color{red}#1}}
+\newcommand{\cblue}[1]{{\color{blue}#1}}
+
+\usepackage{hyperref}
+\usepackage{geometry}
+
+\def\name{Justin Sherburne}
+
+%pull in the necessary preamble matter for pygments output
+\input{pygments.tex}
+
+%% The following metadata will show up in the PDF properties
+\hypersetup{
+  colorlinks = true,
+  urlcolor = blue,
+  pdfauthor = {\name},
+  pdfkeywords = {cs460 ``computer science'' capstone problem statement},
+  pdftitle = {AHS Competition Problem Statement},
+  pdfsubject = {Problem Statement},
+  pdfpagemode = UseNone
+}
+
+\begin{document}
+\begin{titlepage}
+\begin{center}
+\vspace*{3cm}
+\huge{\textbf{AHS Micro-Air Vehicle Challenge}}\par
+\vspace{1cm}
+\large{Project Sponsored By:}\par
+\vspace{3mm}
+\normalsize{Nancy Squires, Ph.D.}\par
+\vspace{1cm}
+\huge{\textbf{Problem Statement}}\par
+\vspace{1cm}
+\large{Written by:}\par
+\vspace{3mm}
+\normalsize{Justin Sherburne}\par
+\vspace{25mm}
+\large{\textbf{Abstract:}}\par
+\vspace{4mm}
+\normalsize{The AHS Micro-Air Vehicle challenge is a competiton hosted by the 
+American Helicopter Society. This project is sponsored by Nancy Squires Ph.D., 
+and will conclude in May 2018. The Micro-Air Vehicle project proposes to build 
+an autonomous quadcopter capable of meeting the design requirements specified 
+by the AHS competition. If the Oregon State University team qualifies to 
+compete they will travel to Phoenix, AZ and participate in the competiton 
+on May 14-17.}
+\end{center}
+\end{titlepage}
+
+\setlength\parindent{4mm}
+\section*{Problem Definition}\par
+\hspace{4ex}Oregon State University will be competing in the American Helicopter 
+Society's 2018 Micro-Air Vehicle Challenge. Our task is to design and build 
+a vehicle to compete in the 2018 challenge located in Phoenix, Arizona on May 
+14-17, 2018. This vehicle must meet the competition requirements set by The 
+American Helicopter Society. Additionally, this vehicle must be capable of 
+autonomous flight, and support an on-board video system. 
+
+\section*{Problem Description}\par
+\hspace{4ex}The Micro-Air Vehicle challenge is an annual collegiate competition
+hosted by The American Helicopter Society. The competition in conducted by the 
+AHS International's Unmanned VTOL Aircraft and Rotorcraft Committee. Competitors 
+are tasked with building a vehicle that is capable of vertical takeoff and 
+landing. This vehicle may compete in either a manual or autonomous flight 
+category. While the 2018 competition rules have not yet been announced, last 
+year's competition included restrictions on size, weight, and movement. Student 
+teams may receive awards based on innovative systems implemented on their 
+vehicles. The competition takes place at Forum 74, an annual convention hosted 
+by AHS International. The forum takes place May 14-17, and the competition will 
+take place on one of those days. The announcement of the competition date, and 
+rules will be announced mid-October. 
+
+\section*{Proposed Solution}\par
+\hspace{4ex}The Oregon State University Micro-Air Vehicle team will consist of 
+three mechanical engineering, three electrical engineering, and three computer 
+science students. Initially the team will design and build a quadcopter that 
+can be flown manually. When that goal is met, we will begin pursuing limited
+autonomous flight. This limited autonomous flight should be able to navigate, 
+without human interaction, on a pre-defined flight path. If that goal is 
+achieved, then work will begin on a fully-autonomous flight function that 
+allows us to meet the competition objectives without any human interaction. 
+According to last year's rules, the vehicle must be under 500 grams, and less 
+than 17.7 inches in any dimension. The vehicle must also have some sort of 
+on-board camera system that is capable of streaming video to a computer. This 
+video stream must be capable of 24fps, with a latency less than 150ms. 
+According to last years rules, paper design proposals must be submitted by mid-
+January, and a final video evidence of competition readiness much be submitted 
+in March (exact dates to be determined).
+
+\section*{Performance Metrics}\par
+\hspace{4ex}Project completion will be judged by the following performance 
+metrics:
+\begin{enumerate}
+\item Vehicle Completion:
+\begin{itemize}
+\item Can the vehicle fly under its own power?
+\item Does it weigh less than 500g?
+\item Is the vehicle sorter than 17.7 inches in any dimension?
+\item Is the vehicle able to maintain a stable flight path?
+\end{itemize}
+\item Autonomous Completion:
+\begin{itemize}
+\item Can the vehicle stream video to a remote station?
+\item Can the vehicle be controlled remotely from a computer?
+\item Can the vehicle follow a specific flight plan without human interaction?
+\item Can the vehicle locate targets and choose a flight plan without human
+interaction?
+\end{itemize}
+\item Competiton Completion:
+\begin{itemize}
+\item The team must submit an intent to compete in the 2018 AHS Mirco-Air Vehicle 
+Challenge.
+\item The team must submit a design proposal for competition before the mid-
+January cut-off date. 
+\item The team must demonstrate competition readiness by meeting the vehicle and 
+autonomous requirements prior to the competition date, and submit video evidence 
+to the competition organizers for final selection.
+\item If selected to compete in the 2018 challenge, the team must travel to 
+Phoenix to participate in the challenge. 
+\end{itemize}
+\end{enumerate}
+\end{document}
+
+
+
+
