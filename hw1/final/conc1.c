@@ -5,6 +5,7 @@
 #include <limits.h>
 #include <string.h>
 #include <semaphore.h>
+#include <stdio.h>
 
 #define N 624
 #define M 397
@@ -164,15 +165,11 @@ int getRand(int i, int j){
 
 	
 	int num = 0;
+	unsigned int rnd = 0;
 	if(ecx & 0x40000000){
-		//USE rdrand
-/*		__asm__ __volatile__(
-							  "rdrand;"
-							  : "=a"(eax)
-							);
-		
-		num = eax;
-*/		//printf("Hello rdrand!");
+		//Use rdrand
+		__asm__ __volatile__("rdrand %0" : "=r" (rnd));
+		num = (i + (rnd % (j-i)));
 	}
 	else{
 		//USE mt19937
