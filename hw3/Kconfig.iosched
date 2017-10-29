@@ -30,7 +30,16 @@ config IOSCHED_CFQ
 	  and low latency working environment, suitable for both desktop
 	  and server systems.
 
-	  This is the default I/O scheduler.
+	  This is the default I/O scheduler
+	 
+config IOSCHED_CLOOK
+	tristate "CLOOK I/O scheduler"
+	default y
+	---help---
+	  This CLOOK I/O scheduler is a one-way elevator scheduling algorithm.
+	  The CLOOK scheduler is very similar to the LOOK algorithm but instead
+	  of reading and writing both up and down directions, the CLOOK algorithm
+	  only functions in one direction.
 
 config CFQ_GROUP_IOSCHED
 	bool "CFQ Group Scheduling support"
@@ -55,6 +64,9 @@ choice
 	config DEFAULT_NOOP
 		bool "No-op"
 
+	config DEFAULT_CLOOK
+		bool "CLOOK" if IOSCHED_CLOOK=y
+
 endchoice
 
 config DEFAULT_IOSCHED
@@ -62,6 +74,7 @@ config DEFAULT_IOSCHED
 	default "deadline" if DEFAULT_DEADLINE
 	default "cfq" if DEFAULT_CFQ
 	default "noop" if DEFAULT_NOOP
+	default "clook" if DEFAULT_CLOOK
 
 endmenu
 
