@@ -1,0 +1,232 @@
+%% The following template is sourced from Kevin McGrath on 6 Oct. 2017 located:
+%%http://web.engr.oregonstate.edu/cgi-bin/cgiwrap/dmcgrath/classes/17F/cs444/index.cgi?examples=examples/template.tex
+
+\documentclass[letterpaper,10pt,titlepage]{article}
+
+\usepackage{graphicx}                                        
+\usepackage{amssymb}                                         
+\usepackage{amsmath}                                         
+\usepackage{amsthm}                                          
+
+\usepackage{alltt}                                           
+\usepackage{float}
+\usepackage{color}
+\usepackage{url}
+
+\usepackage{balance}
+%\usepackage[TABBOTCAP, tight]{subfigure}
+\usepackage{enumitem}
+\usepackage{pstricks, pst-node}
+
+\usepackage{geometry}
+\geometry{textheight=8.5in, textwidth=6in}
+
+%random comment
+
+\newcommand{\cred}[1]{{\color{red}#1}}
+\newcommand{\cblue}[1]{{\color{blue}#1}}
+
+\usepackage{hyperref}
+\usepackage{geometry}
+
+\def\name{Justin Sherburne and David Baugh}
+
+%pull in the necessary preamble matter for pygments output
+\input{pygments.tex}
+
+%% The following metadata will show up in the PDF properties
+\hypersetup{
+  colorlinks = true,
+  urlcolor = blue,
+  pdfauthor = {\name},
+  pdfkeywords = {cs444 ``operating systems two'' yocto concurrency},
+  pdftitle = {CS 444 Project 1: Concurrency},
+  pdfsubject = {CS 444 Project 1},
+  pdfpagemode = UseNone
+}
+
+\begin{document}
+\begin{center}
+\textbf{\huge{Project 1: Getting Acquainted}}
+\\By David Baugh and Justin Sherburne
+\\Group 21
+\end{center}
+\section*{Log of commands to build the Kernal:}
+\begin{enumerate}
+\item \texttt{git clone git://git.yoctoproject.org/linux-yocto-3.19}
+
+\textsl{This command clones the yocto client to your current directory}
+\item \texttt{git checkout 'v3.19.2'}
+
+\textsl{Checkout the 'v3.19.2' tag and then source the instructor's files as 
+follows.}
+\item \texttt{source /scratch/files/environment-setup-i586-poky-linux}
+\item \texttt{cp /scratch/files/core-image-lsb-sdk-qemux86.ext4 
+core-image-lsb-sdk-qemux86.ext4}
+\item \texttt{cp /scratch/files/config-3.19.2-yocto-standard .config}
+\item \texttt{make menuconfig}
+
+\textsl{Here we make a couple of changes before building. First we verify that 
+it is in 32-bit mode, then we rename the hostname to whatever we would like. 
+In this case we named it Group 21 HW1.}
+\item \texttt{make -j4 all}
+
+\textsl{Make the kernal. This finalizes our build before starting}
+\item \texttt{qemu-system-i386 -gdb tcp::5521 -S -nographic -kernel 
+bzImage-qemux86.bin -drive file=core-image-lsb-sdk-qemux86.ext4,
+if=virtio -enable-kvm -net none -usb -localtime --no-reboot 
+--append "root=/dev/vda rw console=ttyS0 debug"}
+
+\textsl{Now the shell will hang waiting for the CPU to start. In another shell:}
+\begin{enumerate}
+	\item \texttt{gdb}
+	\item \texttt{target remote localhost:5521}
+	\item \texttt{continue}
+\end{enumerate}
+\textsl{Finally, to exit the VM:} 
+\item \texttt{poweroff}
+\end{enumerate}
+
+\section*{Concurrency writeup}
+\hspace{4ex}For our concurrency problem we first implemented the random number 
+generators for later use. Them we broke down our program into the functions that 
+we needed. These functions included a consumer and producer functions to be 
+initiated later. Then we created buffer modifying functions to add and remove 
+items as needed. The final touches, and the hardest part, was getting all of the 
+individual functions to work together. 
+
+\section*{Breakdown of qemu command}
+\texttt{qemu-system-i386 -gdb tcp::5521 -S -nographic -kernel
+bzImage-qemux86.bin -drive file=core-image-lsb-sdk-qemux86.ext4,
+if=virtio -enable-kvm -net none -usb -localtime --no-reboot
+--append "root=/dev/vda rw console=ttyS0 debug"}
+
+Source:
+\textsl{https://qemu.weilnetz.de/doc/qemu-doc.html}
+
+\begin{itemize}
+\item{\texttt{qemu-system-i386}}
+
+\textsl{This portion of the command tells the system that we are going to be 
+running qemu-i386. Qemu is just a program on the OS server that allows us to 
+emulate our linux core. }
+\item{\texttt{-gdb tcp::5521 -S}}
+
+\textsl{This enables GDB support for our core. It also opens a port so you can 
+connect using GDB, in our case 5521. The -S suspends the processor until a GDB 
+connection is made to allow for debugging during startup. If you remove the -S 
+the kernal will start rather than waiting for GDB to connect.}
+\item{\texttt{-nographic}}
+
+\textsl{Disables the graphic UI that qemu usually opens. Instead you only have 
+the CLI.}
+\item{\texttt{-kernel bzImage-qemux86.bin}}
+
+\textsl{This command specifies  bzImage as the kernal image.}
+\item{\texttt{-drive file=core-image-lsb-sdk-qemux86.ext4,if=virtio}}
+
+\textsl{The drive portion of this command defines a new drive for the kernal to 
+use. The \texttt{file=core-image-lsb-sdk-qemux86.ext4,if=virtio} specifies which 
+disk image to use, in this case we copied the disk image from the instructors 
+files. The virtio specifies what type of interface it is using.}
+\item{\texttt{-enable-kvm}}
+
+\textsl{Enables full KVM virtualization support}
+\item{\texttt{-net none}}
+
+\textsl{Disables the use of any network devices. }
+\item{\texttt{-usb}}
+
+\textsl{Enables the USB driver if it is not enabled by default.}
+\item{\texttt{-localtime}}
+
+\textsl{This is a shortcut for the -rtc tag that sets up the clock for the 
+kernal. Specifically this enables the time to be set to the local server time.}
+\item{\texttt{--no-reboot}}
+
+\textsl{Allows you to exit rather than rebooting.}
+\item{\texttt{--append "root=/dev/vda rw console=ttyS0 debug"}}
+
+\textsl{Allows you to direct linux boot without needing a full bootable 
+image.}
+
+\end{itemize}
+
+\section*{Questions}
+\begin{enumerate}
+\item{What do you think the main point of this assignment is?}
+
+\textsl{I think the main point of the concurrency assignment was to teach us 
+how to manage many threads running at the same time. Creating processes is the 
+easy part of this assignment, getting those to work together successfully is the 
+difficult part.} 
+\item{How did you personally approach the problem? Design decisions, algorithm, 
+etc.}
+
+\textsl{Initially we adopted the random number generators from the provided 
+resources on the course website. After that, we knew we needed a producer, 
+a consumer, and a buffer in-between. After those were implemented we divided 
+them into their own threads with additional functions to add and remove from 
+the buffer as needed. We wanted the code to be as modular as possible, so 
+most aspects of this program are divided into their own functions.}
+\item{How did you ensure your solution was correct? Testing details, for 
+instance.}
+
+\textsl{When we ran into some issues with our number generators we used some 
+print statements to view the values of the generators as they were running. 
+This led us to realize that the numbers weren't being correctly seeded. 
+Additionally, we used print statements to track when items went in and out of 
+the buffer.}
+\item{What did you learn?}
+
+\textsl{We learned that paired programming leads to less profanity. Bouncing 
+ideas off of another person can reduce frustration immensely. Also, creating the 
+threads were fairly simple, it was communicating without blocking that was the 
+difficult part.}
+\end{enumerate}
+\section*{Version Control Log}
+We are just beginning our version control for this class. We have two ways that 
+we are tracking versions with. One being a backup of the directory once we are 
+using a stable version of our core. The other is Github where we will make 
+periodic updates to our \href{https://github.com/sherburj/yocto_core}{yocto core 
+repository}. We are currently at version 1, because what we have is our base 
+kernal image. 
+
+\section*{Work Log}
+\begin{itemize}
+\item{Tuesday October 3rd, 2017:}
+
+\textsl{This was the day we got started on the project. Here we successfully 
+cloned the yocto core and got through the menuconfig command during the setup. 
+We could not figure out why the qemu command wasn't running, so we stopped for 
+the evening.}
+\item{Thursday October 5th, 2017:}
+
+\textsl{On Thursday we hit the ground running, and built the kernal. We were 
+incorrectly sourcing the files needed for qemu. After getting that we were able 
+to connect via GDB and start the kernal process. We stopped shortly after that. }
+\item{Saturday October 7th, 2017:}
+
+\textsl{On Saturday we started on the writeup and the concurrency assignment 
+separately. We coordinated as needed between the two projects. We utilized some 
+of the number generator files supplied on the course website for our 
+concurrency program, as well as latex resources. }
+
+\item{Sunday October 8th, 2017:}
+
+\textsl{On Sunday we worked through most of the programming and latex document 
+leaving only a couple of final bugs to sort out. This was the threads, and the 
+skeleton of the latex document.}
+
+\item{Monday October 9th, 2017:}
+
+\textsl{On Monday we finished up programming and the document and submitted 
+them for grading.}
+
+\end{itemize}
+\end{document}
+
+
+
+
+
