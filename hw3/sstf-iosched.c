@@ -28,7 +28,7 @@ static int sstf_dispatch(struct request_queue *q, int force)
 	char direction;
 
 	rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
-	if (!list_empty(&nd->queue)rq) {
+	if (rq) {
 		struct request *rq;
 		list_del_init(&rq->queuelist);
 		elv_dispatch_sort(q, rq);
@@ -49,7 +49,7 @@ static int sstf_dispatch(struct request_queue *q, int force)
 static void sstf_add_request(struct request_queue *q, struct request *rq)
 {
 	struct sstf_data *nd = q->elevator->elevator_data;
-	struck list_head *cur = NULL;
+	struct list_head *cur = NULL;
 	char direction;
 	
 	list_for_each(cur, &nd->queue){
