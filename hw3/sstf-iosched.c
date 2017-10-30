@@ -29,7 +29,6 @@ static int sstf_dispatch(struct request_queue *q, int force)
 
 	rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
 	if (rq) {
-		struct request *rq;
 		list_del_init(&rq->queuelist);
 		elv_dispatch_sort(q, rq);
 				
@@ -39,7 +38,7 @@ static int sstf_dispatch(struct request_queue *q, int force)
 			direction = 'R';
 		else	
 			direction = 'W';
-		printk("[sstf] dsp %c %lu\n", direction, blk_rq_pos(rq));
+		printk("[SSTF] dsp %c %lu\n", direction, blk_rq_pos(rq));
 		
 		return 1;
 	}
@@ -54,28 +53,32 @@ static void sstf_add_request(struct request_queue *q, struct request *rq)
 	
 	list_for_each(cur, &nd->queue){
 		struct request *c = list_entry(cur, struct request, queuelist);
-	}
-	
+
+		if (blk_rq_pos(rq) > diskhead){
+			if(blk_rq_pos(c) < diskhead || blk_rq_pos(rq) < blk_rq_pos(c))
+				break;
+		} else {
+			if(blk_rq_pos(c) < diskhead && blk_rq_pos(rq) < blk_rq_pos(c))
+				break;
+		}
+	}			
 	list_add_tail(&rq->queuelist, cur);
 	
 	if(rq_data_dir(rq) == READ)
 		direction = 'R';
 	else
 		direction = 'W';
-	printk("[sstf] dsp %c %lu\n", direction, blk_rq_pos(rq));
-	
+	printk("[SSTF] dsp %c %lu\n", direction, blk_rq_pos(rq));	
 }
 
-static struct request *
-sstf_former_request(struct request_queue *q, struct request *rq)
-{
+
+static struct request * sstf_former_request(struct request_queue *q, struct request *rq){
 	struct sstf_data *nd = q->elevator->elevator_data;
 
 	if (rq->queuelist.prev == &nd->queue)
 		return NULL;
 	
 	return list_prev_entry(rq, queuelist);
-	return list_entry(rq->queuelist.prev, struct request, queuelist);
 }
 
 static int sstf_init_queue(struct request_queue *q, struct elevator_type *e)
@@ -119,7 +122,7 @@ static struct elevator_type elevator_sstf = {
 		.elevator_init_fn		= sstf_init_queue,
 		.elevator_exit_fn		= sstf_exit_queue,
 	},
-	.elevator_name = "sstf",
+	.elevator_name = "SSTF",
 	.elevator_owner = THIS_MODULE,
 };
 
