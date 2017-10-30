@@ -1,5 +1,5 @@
 /*
- * elevator sstf
+ * elevator sstf (CLOOK)
  */
 #include <linux/blkdev.h>
 #include <linux/elevator.h>
@@ -14,6 +14,7 @@ struct sstf_data {
 	struct list_head queue;
 };
 
+// Merges Requests
 static void sstf_merged_requests(struct request_queue *q, struct request *rq,
 				 struct request *next)
 {
@@ -21,6 +22,7 @@ static void sstf_merged_requests(struct request_queue *q, struct request *rq,
 	elv_dispatch_sort(q, next);
 }
 
+//Dispatch the first request in queue
 static int sstf_dispatch(struct request_queue *q, int force)
 {
 	struct sstf_data *nd = q->elevator->elevator_data;
@@ -34,6 +36,7 @@ static int sstf_dispatch(struct request_queue *q, int force)
 				
 		diskhead = blk_rq_pos(rq);
 		
+		//DEBUG: prints out whether the scheduler is reading or writing at the time
 		if(rq_data_dir(rq) == READ)
 			direction = 'R';
 		else	
@@ -45,15 +48,17 @@ static int sstf_dispatch(struct request_queue *q, int force)
 	return 0;
 }
 
+//Adds request to the queue
 static void sstf_add_request(struct request_queue *q, struct request *rq)
 {
 	struct sstf_data *nd = q->elevator->elevator_data;
 	struct list_head *cur = NULL;
 	char direction;
 	
+	
 	list_for_each(cur, &nd->queue){
 		struct request *c = list_entry(cur, struct request, queuelist);
-
+	//checks the cur position against the diskhead and rq position
 		if (blk_rq_pos(rq) > diskhead){
 			if(blk_rq_pos(c) < diskhead || blk_rq_pos(rq) < blk_rq_pos(c))
 				break;
@@ -64,6 +69,7 @@ static void sstf_add_request(struct request_queue *q, struct request *rq)
 	}			
 	list_add_tail(&rq->queuelist, cur);
 	
+	//DEBUG: prints out whether the scheduler is reading or writing at the time
 	if(rq_data_dir(rq) == READ)
 		direction = 'R';
 	else
@@ -72,6 +78,7 @@ static void sstf_add_request(struct request_queue *q, struct request *rq)
 }
 
 
+//Gets the former request
 static struct request * sstf_former_request(struct request_queue *q, struct request *rq){
 	struct sstf_data *nd = q->elevator->elevator_data;
 
@@ -81,6 +88,7 @@ static struct request * sstf_former_request(struct request_queue *q, struct requ
 	return list_prev_entry(rq, queuelist);
 }
 
+//Initializes the queue
 static int sstf_init_queue(struct request_queue *q, struct elevator_type *e)
 {
 	struct sstf_data *nd;
@@ -105,6 +113,7 @@ static int sstf_init_queue(struct request_queue *q, struct elevator_type *e)
 	return 0;
 }
 
+// Exits the queue
 static void sstf_exit_queue(struct elevator_queue *e)
 {
 	struct sstf_data *nd = e->elevator_data;
@@ -113,6 +122,7 @@ static void sstf_exit_queue(struct elevator_queue *e)
 	kfree(nd);
 }
 
+//struct that contains elevator variables
 static struct elevator_type elevator_sstf = {
 	.ops = {
 		.elevator_merge_req_fn		= sstf_merged_requests,
@@ -126,11 +136,13 @@ static struct elevator_type elevator_sstf = {
 	.elevator_owner = THIS_MODULE,
 };
 
+//upon initialization, this function pulls the elevator and basically converts it to sstf functions.
 static int __init sstf_init(void)
 {
 	return elv_register(&elevator_sstf);
 }
 
+//upon exit of the scheduler, the elevator closes out the sstf elevator
 static void __exit sstf_exit(void)
 {
 	elv_unregister(&elevator_sstf);
