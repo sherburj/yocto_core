@@ -1,0 +1,24 @@
+\begin{tabular}{1 1 1}\textbf{Detail} & \textbf{Author} & \textbf{Description}\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/998d4f5fd33921bd7b174203307e70fed3b60bf3}{998d4f5} & Justin Sherburne & First commit\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/d815c4b495e245c65b52510e5f5ac6c2bb5de055}{d815c4b} & David Baugh & final folder for hw1\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/7cec6e0ed089cb44630eee71e57a6eb22c168fcc}{7cec6e0} & TheEnderPrime & Create README.md\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/2b207e3915c8504a535b169731479fe9c1c2c2b8}{2b207e3} & Justin Sherburne & hw2 commit\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/41b2c9b418a5f736c6e367308cccc49e8056c45b}{41b2c9b} & Justin Sherburne & IOscheduler\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/9145c42c46012ec31a9ff17b6b2ebb35ed897d39}{9145c42} & David Baugh & sstf-iosched.c initial try\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/ed7e1292208a35a614f6ba08600394bd32e0f65a}{ed7e129} & David Baugh & Makefile added\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/199795ca693e9cb8c4687820aa05d9cc820236a7}{199795c} & Justin Sherburne & added the Kconfig for modification\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/1ef152309f5d5f7fa847b4e69d7f0f3ba6a5a642}{1ef1523} & Justin Sherburne & Remove files\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/c84fa23823286601db6bdcaa68bdba4fc33d8526}{c84fa23} & Justin Sherburne &  Modified Kconfig\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/6ff031c2cf38ff8baeaf297b3a5327a27884d12d}{6ff031c} & David Baugh & created .patch file\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/970aa2e16a25be634559d2d869b86f1ed38a0dac}{970aa2e} & David Baugh & changed some lines that were errored in sstf\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/8e82865a89f799f0ccfd69332b21fd475ff02c9f}{8e82865} & Justin Sherburne & final vesions\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/bb9f60af3409180cc321c9de0e50459fed7f2654}{bb9f60a} & Justin Sherburne & Patchfile\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/0fc0a5b28fa10e73da382c2bda9630dc0710009d}{0fc0a5b} & Justin Sherburne & removed old patch\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/fd2dc998bd7e352a141bd5d27726b8fd02fb4c9d}{fd2dc99} & Justin Sherburne & removed old sstf\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/ed66936cbadad78aa19e67a72470f1496d8a2f02}{ed66936} & Justin Sherburne & added new sstf.o file\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/76ec987b83e5e0ed6888b365f38fc7ce0080024f}{76ec987} & TheEnderPrime & final changes, project complete\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/d8421e4c1c9dafedca6c0f887141d91d97e55b2e}{d8421e4} & TheEnderPrime & added sbd.c, kconfig and Makefile editted but not added\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/52a045e97dbb38253b5fb74100bfb2defd5a6b9b}{52a045e} & TheEnderPrime & finished project\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/7584bd1b23f60e808e3d8d5b16d95ffda4c4a55d}{7584bd1} & TheEnderPrime & removed old sbd.c\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/69b977a0b9cc36d22bcff524e5523b11a9c4421b}{69b977a} & Justin Sherburne & Crypto Kernel project push\\\hline
+\href{dirname "$origin"/basename "$origin" .git/commit/6939e21b15109231b66433b6a0b4fe5ab16dd54b}{6939e21} & Justin Sherburne & Crypto Kernel project push\\\hline\end{tabular}
