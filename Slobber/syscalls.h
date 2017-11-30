@@ -278,7 +278,7 @@ asmlinkage long sys_clock_gettime(clockid_t which_clock,
 				struct timespec __user *tp);
 asmlinkage long sys_clock_adjtime(clockid_t which_clock,
 				struct timex __user *tx);
-asmlinkage long sys_clock_getres(clockid_t which_clock,
+asmlinkage long sys_clock_getres(clockid_t which_clock, 
 				struct timespec __user *tp);
 asmlinkage long sys_clock_nanosleep(clockid_t which_clock, int flags,
 				const struct timespec __user *rqtp,
@@ -881,5 +881,6 @@ asmlinkage long sys_bpf(int cmd, union bpf_attr *attr, unsigned int size);
 asmlinkage long sys_execveat(int dfd, const char __user *filename,
 			const char __user *const __user *argv,
 			const char __user *const __user *envp, int flags);
-
+asmlinkage long sys_slob_used(void);
+asmlinkage long sys_slob_free(void);
 #endif

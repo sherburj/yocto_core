@@ -72,9 +72,6 @@
 
 #include <linux/atomic.h>
 
-#include <linux/syscalls.h> /* Include headers for syscalls */
-#include <linux/linkage.h>
-
 #include "slab.h"
 /*
  * slob_block has a field 'units', which indicates size of block if +ve,
@@ -94,9 +91,6 @@ struct slob_block {
 	slobidx_t units;
 };
 typedef struct slob_block slob_t;
-
-/****** Variables for Implementation **************/
-unsigned long bestFit_units;
 
 /*
  * All partially free slob pages go on these lists.
@@ -301,48 +295,19 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 		if (sp->units < SLOB_UNITS(size))
 			continue;
 
-/********* Remove previous allocation for best fit ************
- 		// Attempt to alloc 
+		/* Attempt to alloc */
 		prev = sp->lru.prev;
 		b = slob_page_alloc(sp, size, align);
 		if (!b)
 			continue;
 
-		 //Improve fragment distribution and reduce our average
-		 // search time by starting our next search here. (see
-		 // Knuth vol 1, sec 2.5, pg 449) 
+		/* Improve fragment distribution and reduce our average
+		 * search time by starting our next search here. (see
+		 * Knuth vol 1, sec 2.5, pg 449) */
 		if (prev != slob_list->prev &&
 				slob_list->next != prev->next)
 			list_move_tail(slob_list, prev->next);
-		break; 
-************************************************************/
-		/* Checks if the next slob page is NULL */
-		if(next_sp == NULL)
-			next_sp = sp;
-		
-		/*** Best Fit Algorithm Implementation ***/
-		/* Find the smallest available page */
-		if(next_sp->units > sp->units)
-			next_sp = sp;
- 		
-		/* Attempt allocation on page */
-		if(next_sp != NULL)
-			b = slob_page_alloc(next_sp, size, align);
-	
-		/* Getting fragmentation metrics */
- 		temp_list= &free_slob_large;
-		list_for_each_entry(sp, temp_list, list){
-			bestFit_units = bestFit_units + sp->units;
-		}
-		temp_list= &free_slob_medium;
-		list_for_each_entry(sp, temp_list, list){
-			bestFit_units = bestFit_units + sp->units;
-		}
-		temp_list= &free_slob_small;
-		list_for_each_entry(sp, temp_list, list){
-			bestFit_units = bestFit_units + sp->units;
-		}
-		
+		break;
 	}
 	spin_unlock_irqrestore(&slob_lock, flags);
 
