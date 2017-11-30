@@ -97,6 +97,7 @@ typedef struct slob_block slob_t;
 
 /****** Variables for Implementation **************/
 unsigned long bestFit_units;
+unsigned long page_count;
 
 /*
  * All partially free slob pages go on these lists.
@@ -664,6 +665,16 @@ struct kmem_cache kmem_cache_boot = {
 	.flags = SLAB_PANIC,
 	.align = ARCH_KMALLOC_MINALIGN,
 };
+
+//SYSTEM CALLS ARE HERE!
+asmlinkage long sys_slob_used(void){
+	long used_units = SLOB_UNITS(PAGE_SIZE) * page_count;
+	return used_units;
+}
+
+asmlinkage long sys_slob_free(void){
+	return bestFit_units;
+}
 
 void __init kmem_cache_init(void)
 {
