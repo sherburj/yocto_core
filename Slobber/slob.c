@@ -97,7 +97,7 @@ typedef struct slob_block slob_t;
 
 /****** Variables for Implementation **************/
 unsigned long bestFit_units;
-unsigned long page_count;
+unsigned long page_counterGarbage;
 
 /*
  * All partially free slob pages go on these lists.
@@ -343,7 +343,6 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 		list_for_each_entry(sp, temp_list, list){
 			bestFit_units = bestFit_units + sp->units;
 		}
-		
 	}
 	spin_unlock_irqrestore(&slob_lock, flags);
 
@@ -363,6 +362,7 @@ static void *slob_alloc(size_t size, gfp_t gfp, int align, int node)
 		set_slob_page_free(sp, slob_list);
 		b = slob_page_alloc(sp, size, align);
 		BUG_ON(!b);
+		page_counterGarbage++;
 		spin_unlock_irqrestore(&slob_lock, flags);
 	}
 	if (unlikely((gfp & __GFP_ZERO) && b))
@@ -398,6 +398,7 @@ static void slob_free(void *block, int size)
 		__ClearPageSlab(sp);
 		page_mapcount_reset(sp);
 		slob_free_pages(b, 0);
+		page_counterGarbage--;
 		return;
 	}
 
@@ -504,6 +505,7 @@ void *__kmalloc(size_t size, gfp_t gfp)
 }
 EXPORT_SYMBOL(__kmalloc);
 
+#ifdef CONFIG_TRACING
 void *__kmalloc_track_caller(size_t size, gfp_t gfp, unsigned long caller)
 {
 	return __do_kmalloc_node(size, gfp, NUMA_NO_NODE, caller);
@@ -515,6 +517,7 @@ void *__kmalloc_node_track_caller(size_t size, gfp_t gfp,
 {
 	return __do_kmalloc_node(size, gfp, node, caller);
 }
+#endif
 #endif
 
 void kfree(const void *block)
@@ -668,7 +671,7 @@ struct kmem_cache kmem_cache_boot = {
 
 //SYSTEM CALLS ARE HERE!
 asmlinkage long sys_slob_used(void){
-	long used_units = SLOB_UNITS(PAGE_SIZE) * page_count;
+	long used_units = SLOB_UNITS(PAGE_SIZE) * page_counterGarbage;
 	return used_units;
 }
 

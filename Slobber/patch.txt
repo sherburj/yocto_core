@@ -1,0 +1,154 @@
+--- slob_old.c	2017-11-30 10:37:15.703021192 -0800
++++ slob.c	2017-11-30 16:02:52.106111677 -0800
+@@ -72,6 +72,9 @@
+ 
+ #include <linux/atomic.h>
+ 
++#include <linux/syscalls.h> /* Include headers for syscalls */
++#include <linux/linkage.h>
++
+ #include "slab.h"
+ /*
+  * slob_block has a field 'units', which indicates size of block if +ve,
+@@ -92,6 +95,10 @@
+ };
+ typedef struct slob_block slob_t;
+ 
++/****** Variables for Implementation **************/
++unsigned long bestFit_units;
++unsigned long page_counterGarbage;
++
+ /*
+  * All partially free slob pages go on these lists.
+  */
+@@ -295,19 +302,47 @@
+ 		if (sp->units < SLOB_UNITS(size))
+ 			continue;
+ 
+-		/* Attempt to alloc */
++/********* Remove previous allocation for best fit ************
++ 		// Attempt to alloc 
+ 		prev = sp->lru.prev;
+ 		b = slob_page_alloc(sp, size, align);
+ 		if (!b)
+ 			continue;
+ 
+-		/* Improve fragment distribution and reduce our average
+-		 * search time by starting our next search here. (see
+-		 * Knuth vol 1, sec 2.5, pg 449) */
++		 //Improve fragment distribution and reduce our average
++		 // search time by starting our next search here. (see
++		 // Knuth vol 1, sec 2.5, pg 449) 
+ 		if (prev != slob_list->prev &&
+ 				slob_list->next != prev->next)
+ 			list_move_tail(slob_list, prev->next);
+-		break;
++		break; 
++************************************************************/
++		/* Checks if the next slob page is NULL */
++		if(next_sp == NULL)
++			next_sp = sp;
++		
++		/*** Best Fit Algorithm Implementation ***/
++		/* Find the smallest available page */
++		if(next_sp->units > sp->units)
++			next_sp = sp;
++ 		
++		/* Attempt allocation on page */
++		if(next_sp != NULL)
++			b = slob_page_alloc(next_sp, size, align);
++	
++		/* Getting fragmentation metrics */
++ 		temp_list= &free_slob_large;
++		list_for_each_entry(sp, temp_list, list){
++			bestFit_units = bestFit_units + sp->units;
++		}
++		temp_list= &free_slob_medium;
++		list_for_each_entry(sp, temp_list, list){
++			bestFit_units = bestFit_units + sp->units;
++		}
++		temp_list= &free_slob_small;
++		list_for_each_entry(sp, temp_list, list){
++			bestFit_units = bestFit_units + sp->units;
++		}
+ 	}
+ 	spin_unlock_irqrestore(&slob_lock, flags);
+ 
+@@ -327,6 +362,7 @@
+ 		set_slob_page_free(sp, slob_list);
+ 		b = slob_page_alloc(sp, size, align);
+ 		BUG_ON(!b);
++		page_counterGarbage++;
+ 		spin_unlock_irqrestore(&slob_lock, flags);
+ 	}
+ 	if (unlikely((gfp & __GFP_ZERO) && b))
+@@ -362,6 +398,7 @@
+ 		__ClearPageSlab(sp);
+ 		page_mapcount_reset(sp);
+ 		slob_free_pages(b, 0);
++		page_counterGarbage--;
+ 		return;
+ 	}
+ 
+@@ -468,6 +505,7 @@
+ }
+ EXPORT_SYMBOL(__kmalloc);
+ 
++#ifdef CONFIG_TRACING
+ void *__kmalloc_track_caller(size_t size, gfp_t gfp, unsigned long caller)
+ {
+ 	return __do_kmalloc_node(size, gfp, NUMA_NO_NODE, caller);
+@@ -480,6 +518,7 @@
+ 	return __do_kmalloc_node(size, gfp, node, caller);
+ }
+ #endif
++#endif
+ 
+ void kfree(const void *block)
+ {
+@@ -630,6 +669,16 @@
+ 	.align = ARCH_KMALLOC_MINALIGN,
+ };
+ 
++//SYSTEM CALLS ARE HERE!
++asmlinkage long sys_slob_used(void){
++	long used_units = SLOB_UNITS(PAGE_SIZE) * page_counterGarbage;
++	return used_units;
++}
++
++asmlinkage long sys_slob_free(void){
++	return bestFit_units;
++}
++
+ void __init kmem_cache_init(void)
+ {
+ 	kmem_cache = &kmem_cache_boot;
+--- systable_old.tbl	2017-11-30 16:23:00.651356842 -0800
++++ syscall_32.tbl	2017-11-30 11:19:23.656986628 -0800
+@@ -365,3 +365,5 @@
+ 356	i386	memfd_create		sys_memfd_create
+ 357	i386	bpf			sys_bpf
+ 358	i386	execveat		sys_execveat			stub32_execveat
++359	i386	slob_used		sys_slob_used
++360	i386	slob_free		sys_slob_free
+--- syscalls_old.h	2017-11-30 16:23:29.494862723 -0800
++++ syscalls.h	2017-11-30 11:21:18.920972865 -0800
+@@ -278,7 +278,7 @@
+ 				struct timespec __user *tp);
+ asmlinkage long sys_clock_adjtime(clockid_t which_clock,
+ 				struct timex __user *tx);
+-asmlinkage long sys_clock_getres(clockid_t which_clock,
++asmlinkage long sys_clock_getres(clockid_t which_clock, 
+ 				struct timespec __user *tp);
+ asmlinkage long sys_clock_nanosleep(clockid_t which_clock, int flags,
+ 				const struct timespec __user *rqtp,
+@@ -881,5 +881,9 @@
+ asmlinkage long sys_execveat(int dfd, const char __user *filename,
+ 			const char __user *const __user *argv,
+ 			const char __user *const __user *envp, int flags);
++			
++asmlinkage long sys_slob_used(void);
++
++asmlinkage long sys_slob_free(void);
+ 
+ #endif
