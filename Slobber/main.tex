@@ -1,0 +1,106 @@
+\documentclass[10pt,drafclsnofoot,onecolumn]{IEEEtran}
+\usepackage{graphicx}
+\usepackage{anysize}
+\usepackage{color}
+\usepackage{balance}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{cite}
+\usepackage{hyperref}
+\usepackage{url}      
+\usepackage[margin=0.75in]{geometry}
+\usepackage{amsmath}
+\usepackage{array}
+\marginsize{.75in}{.75in}{.75in}{.75in}
+             
+\begin{document}               
+\begin{titlepage}
+\title{\huge{Project 4:} \\ \large{The SLOB SLAB}}
+\author{
+	Class: CS 444 \\ Professor Kevin McGrath
+}
+
+\null  % Empty line
+\nointerlineskip  % No skip for prev line
+\vfill
+\let\snewpage \newpage
+\let\newpage \relax
+\maketitle
+\begin{center}
+\huge{Best-fit vs. First-fit}\par
+\vspace{2mm}
+\large{Group 21 Members:}\par
+\normalsize{David Baugh}\par
+\normalsize{Justin Sherburne}\par
+\vspace{8mm}
+\large{\textbf{Abstract:}}\par 
+\vspace{2mm}
+\normalsize{The purpose of this project was to analyze the difference between the best-fit and first-fit algorithms when applied to the Slob within the Linux kernel.}
+\end{center}
+\let \newpage \snewpage
+\vfill 
+\break % page break
+\end{titlepage}
+
+\section{Designing the Algorithm}
+After researching many different iterations of the best-fit algorithm we were able to condense the algorithm to three sections that needed to be implemented. Using that basic idea we were able to build each section individually which made the implementation easier to think about and program. Those sections were as follows:
+\begin{itemize}
+\item Find the smallest available page.
+\item Attempt allocation on page.
+\item Getting fragmentation metrics.
+
+\end{itemize}
+
+\section{Questions}
+\begin{enumerate}
+\item{What do you think the main point of this assignment is?}
+\\ \\ The main point of this assignment was to think critically about how memory is fragmented within the kernel. The assignment was also designed to help the group design an algorithm for a specific memory architecture and then be able to test it within the qemu environment. \\
+
+
+\item{How did you personally approach the problem? Design decisions, algorithm, etc.}
+\\	\\Initially, the group simply did a ton of research into the algorithm needed. Then the group worked together to draw out the algorithm plus the different files we would need to edit for the project. For the actual algorithm, slob.c was the file that needed to be editted. Both syscalls.h and syscall\_32.tbl had to be added to for the system call code. We also created a file within the Kernel for testing purposes that contained the system calls; that file is called test.c \\
+
+
+\item{How did you ensure your solution was correct? Testing details, for instance.}
+\\ \\ In order to test if your Slob.c algorithm was working correctly, we implemented a couple of system calls. These calls just print some basic information about our free and used space.  We could use these system calls on our best-fit and our first-fit algorithms and compare the results. However, because our bzImage did not build correctly we were unable to completely test the functionality of the system calls + algorithms. Based on our research, these should have worked completely fine.  
+\\
+\item{What did you learn?}
+\\ \\ We learned that having working backups makes things much easier. We weren't sure if it was a change in server configurations, or some random file that was getting corrupted that caused our inconsistencies. Even when pulling completely new linux builds and starting from scratch, we were encountering unique errors on every build. I personally think this was due to too many people using the server at one time. Even cloning the original github repo was giving us errors and finishing without cloning all of the code. We also learned that research goes a long way into implementing a given project. We spent several days of researching before implementing any code this time. It made things very easy when we actually sat down to program. 
+\\
+
+\item{How should the TA test your patch?}
+\\ \\  The TA can either use the provided patch file against the existing files, or perform a direct copy of the slob.c, syscalls.h and syscall\_32.tbl files into their corresponding folders in the Linux kernel. 
+
+
+\end{enumerate}
+
+\section{Version Control Log}
+\' \\ \centering
+\begin{tabular}{c c c}
+	\textbf{Detail} & \textbf{Author} & \textbf{Description}\\\hline
+	
+	\href{dirname "$origin"/basename "$origin" .git/commit/30acf20ec0d5ff6d9eb79d70f65ee313dfbdcb03}{30acf20} & Justin Sherburne & Creating Test File\\\hline
+	\href{dirname "$origin"/basename "$origin" .git/commit/0a6ab81b575d19e109ce26b022b1bbf18fc151f9}{0a6ab81} & David Baugh & began work on sys calls\\\hline
+	\href{dirname "$origin"/basename "$origin" .git/commit/9bbe64f75a2edcbbf11a1a62d162427d3521c6f3}{9bbe64f} & Justin Sherburne & Copied files from personal directory\\\hline
+	\href{dirname "$origin"/basename "$origin" .git/commit/eeb6610280395c20665d5f24993ee8ecca86f6b4}{eeb6610} & Justin Sherburne & Working version\\\hline
+	\href{dirname "$origin"/basename "$origin" .git/commit/1b07abc087cdb7b8d35872f30411728d777bcc67}{1b07abc} & Justin Sherburne & final commit\\\hline
+\end{tabular}
+
+\section{Work Log}
+
+\begin{itemize}
+\item{Monday, November 27th, 2017:}
+
+\textsl{Met for a few minutes to figure out what needed to be done on the project. Decided to do research on the algorithms and the current slob.c implementation.}
+
+\item{Tuesday, November 28th, 2017:}
+
+\textsl{Came together and worked on getting the algorithm written out in pseudocode. Looked through and found the system call files which then led to more research based on the implementation of the system calls and testing the algorithms with said system calls.}
+
+\item{Thursday, November 30th, 2017:}
+
+\textsl{Implementation Day! We spend the entire day working through implementing the algorithm, the system calls, and the testing files.}
+
+\end{itemize}
+
+\end{document}
